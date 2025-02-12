@@ -1,7 +1,7 @@
 <template>
   <main class="login__main">
     <h1>LoginPage</h1>
-    <form @submit.prevent.stop.once="submitHandler">
+    <form @submit.prevent="submitHandler">
       <section>
         <article>
           <label for="email">Email</label>
@@ -24,14 +24,14 @@
       </section>
       <section>
         <button type="submit">Se connecter</button>
-        <button type="reset">Réinitialiser</button>
+        <button type="button" @click="resetForm">Réinitialiser</button>
       </section>
     </form>
   </main>
 </template>
 
 <script setup lang="ts">
-import { watch, reactive } from "vue";
+import { reactive } from "vue";
 
 const data = reactive({
   email: "",
@@ -43,17 +43,29 @@ const isUserInputValid = (email: string): boolean => {
   return pattern.test(email);
 };
 
-watch(data, (val) => {
-  console.log(val);
-});
+const isPasswordValid = (password: string): boolean => {
+  const pattern = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
+  return pattern.test(password);
+};
 
 const submitHandler = () => {
-  if (isUserInputValid(data.email)) {
+  const validEmail = isUserInputValid(data.email);
+  const validPassword = isPasswordValid(data.password);
+
+  if (validEmail && validPassword) {
     console.log("Formulaire soumis avec succès");
   } else {
-    alert("L'adresse e-mail n'est pas valide");
+    if (!validEmail) {
+      alert("L'adresse e-mail n'est pas valide");
+    }
+    if (!validPassword) {
+      alert("Le mot de passe doit avoir au moins 8 caractères, une lettre majuscule et un chiffre.");
+    }
   }
 };
 
-const inputHandler = () => {};
+const resetForm = () => {
+  data.email = "";
+  data.password = "";
+};
 </script>
